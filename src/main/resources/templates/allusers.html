@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<a th:href="@{/logout}"><input type="button", value="Logout"></a>
+<br>
+<h2>Admin control panel</h2>
+<h3>"All users list"</h3>
+<div>
+    <br>
+    <table border="2">
+        <tr>
+            <th>Id</th>
+            <th>Username Name</th>
+            <th>Password</th>
+            <th>Roles</th>
+             <th>Email</th>
+             <th>Age</th>
+             <th colspan="2">Options</th>
+         </tr>
+         <tr th:each="user : ${users}">
+             <td th:utext="${user.getId()}">id</td>
+             <td th:utext="${user.getUsername()}">Name</td>
+             <td th:utext="${user.getPassword()}">Password</td>
+             <td th:utext="${user.getRoles()}">Roles</td>
+             <td th:utext="${user.getEmail()}">Email</td>
+             <td th:utext="${user.getAge()}">Age</td>
+             <td><a th:href="@{/admin/updateUser/{id} (id = ${user.getId})}">Edit</a></td>
+             <td><a th:href="@{/admin/deleteUser/{id} (id = ${user.getId})}">Delete</a></td>
+         </tr>
+     </table>
+     <br>
+     <input type= "button" value="Add user"
+            onclick="window.location.href = 'admin/addNewUser'"/>
+ </div>
+ </body>
+ </html>
