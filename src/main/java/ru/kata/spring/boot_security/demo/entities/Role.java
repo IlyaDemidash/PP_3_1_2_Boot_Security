@@ -27,7 +27,7 @@ public class Role implements GrantedAuthority {
     public Role() {
     }
 
-    public Role(Long id, String name) {
+    public Role(String name) {
         this.name = name;
     }
 
@@ -46,7 +46,7 @@ public class Role implements GrantedAuthority {
     public void setName(String name) {
         this.name = name;
     }
-
+    //Переопределили метод из интерфейса GrantedAuthority спринг будет знать где брать Authority
     @Override
     public String getAuthority() {
         return getName();

@@ -15,6 +15,7 @@ import ru.kata.spring.boot_security.demo.repositories.UserRepo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /*
@@ -39,23 +40,23 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     /*
     По имени пользователя возвращаем юзера, но уже в формате UserDetails.
-    Делаем запрос в БД по имени.
+    Делаем запрос в БД по имени. Грубо говоря показываем спрингу (AuthenticationProvider) как получить User в формате UserDetails.
+    Реализация метода зависит от того где лежат наши пользователи, как мы их будем получать в данном случае из БД
     */
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByUsername(username);
-        //если в БД его нет:
-        if (user == null) {
-            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
-        }
+        Optional<User> userOptional = Optional.ofNullable(findByUsername(username));
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
         /*
         Если нашли, то его нужно преобразовать к UserDetails, создаем юзера спрингового и передаем ему
         имя нашего пользователя, полученный пароль и коллекцию GrantedAuthorities.
          */
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
+            return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
+        }
+       else throw new UsernameNotFoundException("User with username: " + username + "not found!");
     }
-
     //метод из коллекции ролей получает коллекцию прав доступа GrantedAuthorities
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
         return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
@@ -89,4 +90,5 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     public List<Role> roleList() {
         return roleRepo.findAll();
     }
+
 }
